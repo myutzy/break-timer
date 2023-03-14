@@ -1,0 +1,105 @@
+﻿@page "/break"
+@implements IDisposable
+@using Howler.Blazor.Components
+@inject IHowl Howl
+@inject IHowlGlobal HowlGlobal
+@inject NavigationManager NavigationManager
+@inject NotificationService NotificationService
+@inject SetupService SetupService
+@inject StateContainer StateContainer
+@inject TimeService TimeService
+
+<PageTitle>Break</PageTitle>
+
+<div class="row">
+    <div class="col p-0">
+        <Clock />
+        <div class="row mb-4">
+            <div class="col text-center">
+                Back to work in
+                <span class="badge text-light @(StateContainer.BreakTimeLeft == TimeSpan.Zero ? "bg-danger" : "bg-dark")">
+                    @StateContainer.BreakTimeLeft
+                </span>
+            </div>
+        </div>
+        <div class="row py-4 bg-success text-light rounded shadow-sm">
+            <div class="col">
+                <div class="row">
+                    <div class="col">
+                        <div class="display-4 text-center my-2 text-uppercase">
+                            Break Time
+                        </div>
+                        <p class="text-center">Stand up and stretch, rest your eyes, and drink plenty of water!</p>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col d-flex justify-content-center">
+                        @if (StateContainer.BreakTimeLeft == TimeSpan.Zero)
+                        {
+                            <RadzenButton ButtonStyle="ButtonStyle.Primary"
+                                      Click=@WorkClicked
+                                      Size="ButtonSize.Large"
+                                      Style="btn-block"
+                                      Text="Back to Work" />
+                        }
+                        else
+                        {
+                            <RadzenButton ButtonStyle="ButtonStyle.Light"
+                                      Click=@EndClicked
+                                      Size="ButtonSize.Large"
+                                      Style="btn-block"
+                                      Text="End" />
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col ps-4 pe-4">
+                <img src="https://media.giphy.com/media/yXNzP9vgOMzvyJgUO7/giphy.gif" class="rounded-bottom" />
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    public void Dispose()
+    {
+        StateContainer.OnChange -= StateHasChanged;
+        TimeService.OnBreakEnded -= BreakEnded;
+    }
+
+    async void BreakEnded()
+    {
+        await Howl.Play("audio/bell_success.mp3");
+
+        var message = new NotificationMessage
+            {
+                Severity = NotificationSeverity.Success,
+                Summary = "Back to work!",
+                Detail = string.Empty,
+                Duration = 4000
+            };
+
+        NotificationService.Notify(message);
+    }
+
+    void EndClicked()
+    {
+        TimeService.StopBreak();
+        NavigationManager.NavigateTo("/");
+    }
+
+    void WorkClicked()
+    {
+        TimeService.StopBreak();
+        TimeService.StartWork();
+        NavigationManager.NavigateTo("work");
+    }
+
+    protected override void OnInitialized()
+    {
+        StateContainer.OnChange += StateHasChanged;
+        TimeService.OnBreakEnded += BreakEnded;
+    }
+}

@@ -1,0 +1,34 @@
+﻿@using System.Threading
+@implements IDisposable
+
+<div class="row mt-4">
+    <div class="col text-center">
+        <span class="clock-date text-muted">@DateTime.Now.ToLongDateString()</span>
+    </div>
+</div>
+<div class="row mb-4">
+    <div class="col text-center">
+        <span class="display-6">@currentTime</span>
+    </div>
+</div>
+
+@code {
+    string? currentTime;
+    Timer? timer;
+
+    public void Dispose()
+    {
+        timer?.Dispose();
+    }
+
+    private void Tick(object? _)
+    {
+        currentTime = DateTime.Now.ToLongTimeString();
+        InvokeAsync(StateHasChanged);
+    }
+
+    protected override void OnInitialized()
+    {
+        timer = new Timer(Tick, null, 0, 1000);
+    }
+}

@@ -1,0 +1,86 @@
+﻿@page "/setup"
+@implements IDisposable
+@inject NavigationManager NavigationManager
+@inject SetupService SetupService
+@inject StateContainer StateContainer
+
+<PageTitle>Index</PageTitle>
+
+<div class="m-4">
+    <div class="row">
+        <div class="col">
+            <p>I want to work for:</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-3">
+            <RadzenNumeric @bind-Value=@StateContainer.WorkDuration
+                           ShowUpDown="false" />
+        </div>
+        <div class="col-9">
+            <RadzenSelectBar @bind-Value=@StateContainer.IsWorkDurationHours TValue="bool">
+                <Items>
+                    <RadzenSelectBarItem Text="Hours" Value="true" />
+                    <RadzenSelectBarItem Text="Minutes" Value="false" />
+                </Items>
+            </RadzenSelectBar>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col">
+            <p>then break for:</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-3">
+            <RadzenNumeric @bind-Value=@StateContainer.BreakDuration
+                           ShowUpDown="false" />
+        </div>
+        <div class="col-9">
+            <RadzenSelectBar @bind-Value=@StateContainer.IsBreakDurationHours TValue="bool">
+                <Items>
+                    <RadzenSelectBarItem Text="Hours" Value="true" />
+                    <RadzenSelectBarItem Text="Minutes" Value="false" />
+                </Items>
+            </RadzenSelectBar>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col d-flex justify-content-end">
+            <RadzenButton ButtonStyle="ButtonStyle.Success"
+                          Click=@OnSaveClicked
+                          Size="ButtonSize.Large"
+                          Style="btn-block"
+                          Text="Save" />
+        </div>
+        <div class="col d-flex justify-content-start">
+            <RadzenButton ButtonStyle="ButtonStyle.Light"
+                          Click=@OnCancelClicked
+                          Size="ButtonSize.Large"
+                          Text="Cancel" />
+        </div>
+    </div>
+</div>
+
+@code {
+    public void Dispose()
+    {
+        StateContainer.OnChange -= StateHasChanged;
+    }
+
+    void OnCancelClicked()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+
+    void OnSaveClicked()
+    {
+        SetupService.Update();
+        NavigationManager.NavigateTo("/");
+    }
+
+    protected override void OnInitialized()
+    {
+        StateContainer.OnChange += StateHasChanged;
+    }
+}

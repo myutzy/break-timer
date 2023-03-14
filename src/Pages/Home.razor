@@ -1,0 +1,54 @@
+﻿@page "/"
+@implements IDisposable
+@inject NavigationManager NavigationManager
+@inject SetupService SetupService
+@inject StateContainer StateContainer
+@inject TimeService TimeService
+
+<PageTitle>Index</PageTitle>
+
+<div class="row">
+    <div class="col m-4">
+        <Clock />
+        <div class="row">
+            <div class="col d-flex justify-content-center">
+                <RadzenButton ButtonStyle="ButtonStyle.Primary"
+                              Click=@OnStartClicked
+                              Size="ButtonSize.Large"
+                              Style="btn-block"
+                              Text="Start" />
+            </div>
+            <div class="col d-flex justify-content-center">
+                <RadzenButton ButtonStyle="ButtonStyle.Light"
+                              Click=@OnSetupClicked
+                              Size="ButtonSize.Large"
+                              Style="btn-block"
+                              Text="Setup" />
+            </div>
+        </div>
+        <Stats />
+    </div>
+</div>
+
+@code {
+    public void Dispose()
+    {
+        StateContainer.OnChange -= StateHasChanged;
+    }
+
+    void OnSetupClicked()
+    {
+        NavigationManager.NavigateTo("setup");
+    }
+
+    void OnStartClicked()
+    {
+        TimeService.StartWork();
+        NavigationManager.NavigateTo("work");
+    }
+
+    protected override void OnInitialized()
+    {
+        StateContainer.OnChange += StateHasChanged;
+    }
+}
