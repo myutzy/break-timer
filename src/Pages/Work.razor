@@ -17,8 +17,8 @@
         <div class="row mb-4">
             <div class="col text-center">
                 Break in
-                <span class="badge text-light @(StateContainer.WorkTimeLeft == TimeSpan.Zero ? "bg-danger" : "bg-dark")">
-                    @StateContainer.WorkTimeLeft
+                <span class="badge text-light @(StateContainer.WorkTimeLeft <= TimeSpan.Zero ? "bg-danger" : "bg-dark")">
+                    @StateContainer.WorkTimeLeft.ToString(@"hh\:mm\:ss")
                 </span>
             </div>
         </div>
@@ -33,7 +33,7 @@
                 </div>
                 <div class="row my-2">
                     <div class="col d-flex justify-content-center">
-                        @if (StateContainer.WorkTimeLeft == TimeSpan.Zero)
+                        @if (StateContainer.WorkTimeLeft <= TimeSpan.Zero)
                         {
                             <RadzenButton ButtonStyle="ButtonStyle.Primary"
                                       Click=@BreakClicked
