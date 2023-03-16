@@ -19,7 +19,7 @@ namespace BreakTimer.Services
 
         public void StartBreak()
         {
-            StateContainer.BreakTimeLeft = new TimeSpan(
+            StateContainer.BreakEndTime = DateTime.Now + new TimeSpan(
                 StateContainer.IsBreakDurationHours ? StateContainer.BreakDuration : 0,
                 StateContainer.IsBreakDurationHours ? 0 : StateContainer.BreakDuration, 0);
 
@@ -28,7 +28,7 @@ namespace BreakTimer.Services
 
         public void StartWork()
         {
-            StateContainer.WorkTimeLeft = new TimeSpan(
+            StateContainer.WorkEndTime = DateTime.Now + new TimeSpan(
                 StateContainer.IsWorkDurationHours ? StateContainer.WorkDuration : 0,
                 StateContainer.IsWorkDurationHours ? 0 : StateContainer.WorkDuration, 0);
 
@@ -38,18 +38,20 @@ namespace BreakTimer.Services
         public void StopBreak()
         {
             BreakTimer?.Dispose();
+            StateContainer.BreakEndTime = default;
         }
 
         public void StopWork()
         {
             WorkingTimer?.Dispose();
+            StateContainer.WorkEndTime = default;
         }
 
         private void BreakTimerTick(object? _)
         {
-            StateContainer.BreakTimeLeft = StateContainer.BreakTimeLeft.Subtract(new TimeSpan(0, 0, 1));
+            StateContainer.BreakTimeLeft = StateContainer.BreakEndTime - DateTime.Now;
 
-            if (StateContainer.BreakTimeLeft ==  TimeSpan.Zero)
+            if (StateContainer.BreakTimeLeft <=  TimeSpan.Zero)
             {
                 BreakTimer?.Dispose();
                 NotifyBreakEnded();
@@ -61,9 +63,9 @@ namespace BreakTimer.Services
 
         private void WorkTimerTick(object? _)
         {
-            StateContainer.WorkTimeLeft = StateContainer.WorkTimeLeft.Subtract(new TimeSpan(0, 0, 1));
+            StateContainer.WorkTimeLeft = StateContainer.WorkEndTime - DateTime.Now;
 
-            if (StateContainer.WorkTimeLeft == TimeSpan.Zero)
+            if (StateContainer.WorkTimeLeft <= TimeSpan.Zero)
             {
                 WorkingTimer?.Dispose();
                 NotifyWorkEnded();

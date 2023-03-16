@@ -14,6 +14,18 @@
             }
         }
 
+        private DateTime breakEndTime;
+
+        public DateTime BreakEndTime
+        {
+            get => breakEndTime;
+            set
+            {
+                breakEndTime = value;
+                NotifyStateChanged();
+            }
+        }
+
         private TimeSpan breakTimeLeft;
 
         public TimeSpan BreakTimeLeft
@@ -58,6 +70,18 @@
             set
             {
                 workDuration = value;
+                NotifyStateChanged();
+            }
+        }
+
+        private DateTime workEndTime;
+
+        public DateTime WorkEndTime
+        {
+            get => workEndTime;
+            set
+            {
+                workEndTime = value;
                 NotifyStateChanged();
             }
         }
